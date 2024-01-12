@@ -14,11 +14,11 @@ function verificarToken(req, res, next) {
         const decoded = jwt.verify(token, config.token.secret);
         req.user = decoded.user;
         next();
-      } catch (error) {
+    } catch (error) {
         return res.status(401).json({
             message: 'Token inválido'
         });
-      }
+    }
 }
 
 module.exports = { verificarToken }

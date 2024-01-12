@@ -18,9 +18,7 @@ const obtenerProductos = (req, res) => {
                 error: error.message
             });
         }
-        return res.status(200).json({
-            productos
-        });
+        return res.status(200).json(productos);
     });
 }
 
@@ -28,17 +26,15 @@ const consultarProducto = (req, res) => {
     const id_producto = req.params.id;
     conexion.query(`SELECT p.nombre, p.descripcion, p.marca, c.nombre categoria, p.cantidad, p.precio_venta, p.precio_compra, p.imagen
     FROM producto p JOIN categoria c WHERE p.id_categoria = c.id_categoria AND p.id_producto = ? AND p.deleted = 0`,
-        [id_producto], (error, result) => {
+        [id_producto], (error, producto) => {
             if (error) {
                 return res.status(500).json({
                     message: 'Error al consultar el producto',
                     error: error.message
                 });
             }
-            if (result.length > 0) {
-                return res.status(200).json({
-                    producto: result
-                });
+            if (producto.length > 0) {
+                return res.status(200).json(producto);
             } else {
                 return res.status(404).json({
                     message: 'Producto no encontrado'

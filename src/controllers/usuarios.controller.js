@@ -6,18 +6,18 @@ const jwt = require('jsonwebtoken');
 const registro = (req, res) => {
     const { id_usuario, username, email, password } = req.body;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
+    const passwordRegex = /^.{6,}$/;
 
     if (!emailRegex.test(email)) {
-        return res.status(400).json({
-            message: 'Formato de email inválido'
-        });
+        return res.status(400).json(
+            'Formato de email inválido'
+        );
     }
 
     if (!passwordRegex.test(password)) {
-        return res.status(400).json({
-            message: 'La contraseña debe contener al menos 6 caracteres, una letra mayúscula y un número'
-        });
+        return res.status(400).json(
+            'La contraseña debe contener al menos 6 caracteres'
+        );
     }
 
     conexion.query('SELECT * FROM usuario WHERE id_usuario = ? OR email = ?', [id_usuario, email], (error, result) => {
@@ -28,9 +28,9 @@ const registro = (req, res) => {
             });
         }
         if (result.length > 0) {
-            return res.status(404).json({
-                message: 'El correo electrónico ya existe'
-            });
+            return res.status(404).json(
+                'El correo electrónico ya existe'
+            );
         } else {
             const encriptado = bcrypt.hashSync(password, 10)
             conexion.query(`INSERT INTO usuario (username, email, password) VALUES
@@ -41,9 +41,9 @@ const registro = (req, res) => {
                         error: error.message
                     });
                 }
-                return res.status(200).json({
-                    message: 'Ha sido registrado exitosamente',
-                });
+                return res.status(200).json(
+                    'Ha sido registrado exitosamente',
+                );
             });
         }
     });
@@ -59,18 +59,18 @@ const login = (req, res) => {
             });
         }
         if (result.length === 0) {
-            return res.status(404).json({
-                message: 'Email incorrecto'
-            });
+            return res.status(404).json(
+                'Email incorrecto'
+            );
         }
 
         const encontrado = result[0];
         const correcto = bcrypt.compareSync(password, encontrado.password);
 
         if (!correcto) {
-            return res.status(404).json({
-                message: 'Contraseña incorrecta'
-            })
+            return res.status(404).json(
+                'Contraseña incorrecta'
+            )
         } else {
             const payload = {
                 user: {
@@ -81,7 +81,8 @@ const login = (req, res) => {
 
             return res.status(200).json({
                 message: 'Acceso exitoso',
-                usuario: encontrado.id_usuario,
+                id: encontrado.id_usuario,
+                nombre: encontrado.username,
                 token
             })
         }
